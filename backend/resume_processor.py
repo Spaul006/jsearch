@@ -18,9 +18,16 @@ else:
     gemini_model = None
 
 def extract_text_from_pdf(pdf_file):
-    """Extract text content from uploaded PDF file"""
+    """Extract text content from uploaded PDF file (file object or file path)"""
     try:
-        pdf_reader = PyPDF2.PdfReader(pdf_file)
+        # Handle both file objects (from Flask) and file paths
+        if hasattr(pdf_file, 'read'):
+            # It's a file object from Flask upload
+            pdf_reader = PyPDF2.PdfReader(pdf_file)
+        else:
+            # It's a file path (for backward compatibility)
+            pdf_reader = PyPDF2.PdfReader(pdf_file)
+        
         text = ""
         for page in pdf_reader.pages:
             text += page.extract_text() + "\n"
@@ -31,7 +38,9 @@ def extract_text_from_pdf(pdf_file):
 
 def parse_resume_with_gemini(resume_text):
     """Use Gemini to parse and extract key information from resume"""
+    print(f"🔍 parse_resume_with_gemini called with text length: {len(resume_text) if resume_text else 0}")
     if not resume_text or not gemini_model:
+        print(f"🔍 Skipping resume parsing - text: {bool(resume_text)}, gemini: {bool(gemini_model)}")
         return None
     
     try:

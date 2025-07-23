@@ -3,395 +3,567 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Job Search</title>
+    <title>AI Job Matcher - Professional Edition</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
-            font-family: 'Segoe UI', Arial, sans-serif;
-            background: #f7f9fa;
-            margin: 0;
-            padding: 0;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: #f4f6fa;
+            min-height: 100vh;
+            color: #1a202c;
+            line-height: 1.6;
         }
         .container {
-            max-width: 800px;
-            margin: 40px auto;
-            background: #fff;
-            border-radius: 8px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.07);
-            padding: 32px 24px 24px 24px;
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 2rem;
         }
-        h1 {
+        .header {
             text-align: center;
-            color: #222;
+            margin-bottom: 2.5rem;
         }
-        form {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 16px;
-            margin-bottom: 32px;
-            justify-content: center;
+        .header h1 {
+            font-size: 2.4rem;
+            font-weight: 700;
+            color: #22314a;
+            margin-bottom: 0.5rem;
+            letter-spacing: -1px;
         }
-        label {
-            flex: 1 1 180px;
+        .header p {
+            font-size: 1.1rem;
+            color: #4b5563;
+            font-weight: 400;
+        }
+        .main-card {
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(34,49,74,0.06);
+            padding: 2.5rem 2rem;
+            margin-bottom: 2rem;
+        }
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 1.2rem;
+            margin-bottom: 2rem;
+        }
+        .form-group {
             display: flex;
             flex-direction: column;
-            font-weight: 500;
-            color: #333;
         }
-        input[type="text"], input[type="number"] {
-            padding: 8px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            margin-top: 4px;
+        .form-group label {
+            font-weight: 600;
+            color: #22314a;
+            margin-bottom: 0.4rem;
+            font-size: 0.93rem;
+            text-transform: none;
+            letter-spacing: 0;
         }
-        button {
+        .form-group input {
+            padding: 0.85rem;
+            border: 1.5px solid #d1d5db;
+            border-radius: 7px;
+            font-size: 1rem;
+            background: #f9fafb;
+            transition: border 0.2s;
+        }
+        .form-group input:focus {
+            outline: none;
+            border-color: #2563eb;
+            background: #fff;
+        }
+        .resume-upload {
+            grid-column: 1 / -1;
+            background: #f5f7fa;
+            border: 1.5px dashed #b6c2d6;
+            border-radius: 8px;
+            padding: 1.5rem;
+            text-align: center;
+            margin-bottom: 0.5rem;
+        }
+        .resume-upload h3 {
+            color: #22314a;
+            margin-bottom: 0.5rem;
+            font-size: 1.05rem;
+            font-weight: 600;
+        }
+        .resume-upload p {
+            color: #6b7280;
+            margin-bottom: 0.7rem;
+            font-size: 0.93rem;
+        }
+        .resume-upload input[type="file"] {
+            border: none;
+            background: transparent;
+            padding: 0;
+        }
+        .search-btn {
+            grid-column: 1 / -1;
             background: #2563eb;
             color: #fff;
             border: none;
-            border-radius: 4px;
-            padding: 10px 24px;
-            font-size: 1rem;
+            border-radius: 7px;
+            padding: 0.95rem 2rem;
+            font-size: 1.08rem;
+            font-weight: 600;
             cursor: pointer;
-            margin-top: 24px;
+            transition: background 0.2s;
         }
-        button:hover {
+        .search-btn:hover {
             background: #174ea6;
         }
+        .flash-message {
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+            font-weight: 500;
+            border-left: 4px solid;
+        }
+        .flash-success {
+            background: #f0fdf4;
+            color: #166534;
+            border-color: #22c55e;
+        }
+        .flash-error {
+            background: #fef2f2;
+            color: #991b1b;
+            border-color: #ef4444;
+        }
+        .flash-info {
+            background: #eff6ff;
+            color: #1e40af;
+            border-color: #3b82f6;
+        }
         .error {
-            color: #b91c1c;
-            background: #fee2e2;
+            background: #fef2f2;
+            color: #991b1b;
             border: 1px solid #fca5a5;
-            padding: 12px;
-            border-radius: 4px;
-            margin-bottom: 24px;
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
             text-align: center;
+            font-weight: 500;
+        }
+        .resume-info {
+            background: #f5f7fa;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            padding: 1.5rem 2rem;
+            margin-bottom: 2rem;
+        }
+        .resume-info h3 {
+            color: #22314a;
+            margin-bottom: 1rem;
+            font-size: 1.15rem;
+            font-weight: 600;
+        }
+        .resume-info p {
+            margin-bottom: 0.5rem;
+            color: #22314a;
+        }
+        .resume-info strong {
+            color: #2563eb;
+        }
+        .results-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1.5px solid #e5e7eb;
+        }
+        .results-header h2 {
+            color: #22314a;
+            font-size: 1.45rem;
+            font-weight: 700;
+        }
+        .results-count {
+            background: #e5e7eb;
+            padding: 0.5rem 1rem;
+            border-radius: 16px;
+            font-weight: 600;
+            color: #22314a;
         }
         .results-table {
             width: 100%;
             border-collapse: collapse;
-            margin-bottom: 32px;
-        }
-        .results-table th, .results-table td {
-            border: 1px solid #e5e7eb;
-            padding: 8px 12px;
-            text-align: left;
+            margin-bottom: 2rem;
+            background: #fff;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 6px rgba(34,49,74,0.04);
         }
         .results-table th {
-            background: #f1f5f9;
+            background: #f5f7fa;
+            padding: 0.9rem 1rem;
+            text-align: left;
+            font-weight: 600;
+            color: #22314a;
+            border-bottom: 1.5px solid #e5e7eb;
         }
-        .job-box {
-            background: #f9fafb;
+        .results-table td {
+            padding: 0.9rem 1rem;
+            border-bottom: 1px solid #f1f5f9;
+        }
+        .results-table tr:hover {
+            background: #f5f7fa;
+        }
+        .job-card {
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 6px rgba(34,49,74,0.04);
+            margin-bottom: 1.5rem;
+            overflow: hidden;
             border: 1px solid #e5e7eb;
-            border-radius: 6px;
-            margin-bottom: 20px;
-            padding: 18px 20px;
+        }
+        .job-card:hover {
+            box-shadow: 0 4px 12px rgba(34,49,74,0.08);
+        }
+        .job-header {
+            padding: 1.5rem 2rem 1rem 2rem;
+            background: #f5f7fa;
+            border-bottom: 1px solid #e5e7eb;
         }
         .job-title {
-            font-size: 1.2rem;
-            font-weight: 600;
-            color: #2563eb;
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: #22314a;
+            margin-bottom: 0.3rem;
         }
-        .company {
-            color: #555;
-            font-weight: 500;
+        .job-meta {
+            display: flex;
+            gap: 1.5rem;
+            margin-bottom: 0.7rem;
+            flex-wrap: wrap;
         }
-        .location {
-            color: #666;
-        }
-        .apply-link {
-            display: inline-block;
-            margin-top: 8px;
-            color: #fff;
-            background: #22c55e;
-            padding: 7px 16px;
-            border-radius: 4px;
-            text-decoration: none;
-            font-weight: 500;
-        }
-        .apply-link:hover {
-            background: #15803d;
-        }
-        .skills {
-            margin-top: 8px;
-            color: #0e7490;
-        }
-        .desc {
-            margin-top: 10px;
-            color: #222;
-            line-height: 1.6;
-            white-space: pre-line;
-        }
-        .job-section {
-            margin-top: 16px;
-            padding-top: 16px;
-            border-top: 1px solid #e5e7eb;
-        }
-        .job-section:first-of-type {
-            margin-top: 12px;
-            padding-top: 0;
-            border-top: none;
-        }
-        .section-title {
-            font-weight: 600;
-            color: #374151;
-            margin-bottom: 8px;
-            font-size: 1rem;
-        }
-        .section-content {
+        .job-meta-item {
             color: #4b5563;
-            line-height: 1.6;
-            margin-bottom: 12px;
-        }
-        .bullet-list {
-            margin: 8px 0;
-            padding-left: 20px;
-        }
-        .bullet-list li {
-            margin-bottom: 4px;
-            line-height: 1.5;
-        }
-        .company-info {
-            background: #f8fafc;
-            padding: 12px;
-            border-radius: 6px;
-            margin: 12px 0;
-            border-left: 3px solid #3b82f6;
-        }
-        .requirements {
-            background: #fef3c7;
-            padding: 12px;
-            border-radius: 6px;
-            margin: 12px 0;
-            border-left: 3px solid #f59e0b;
-        }
-        .benefits {
-            background: #dcfce7;
-            padding: 12px;
-            border-radius: 6px;
-            margin: 12px 0;
-            border-left: 3px solid #22c55e;
-        }
-        .section-content ul {
-            margin: 8px 0;
-            padding-left: 20px;
-        }
-        .section-content li {
-            margin-bottom: 6px;
-            line-height: 1.5;
-        }
-        .section-content p {
-            margin-bottom: 8px;
-        }
-        .section-content strong, .section-content b {
-            color: #1f2937;
-            font-weight: 600;
-        }
-        .resume-upload {
-            background: #f8fafc;
-            border: 2px dashed #cbd5e1;
-            border-radius: 8px;
-            padding: 20px;
-            text-align: center;
-            margin-bottom: 24px;
-        }
-        .resume-upload:hover {
-            border-color: #3b82f6;
+            font-size: 0.97rem;
         }
         .match-score {
             display: inline-block;
-            padding: 4px 8px;
-            border-radius: 4px;
+            min-width: 54px;
+            text-align: center;
+            padding: 0.35rem 0.7rem;
+            border-radius: 12px;
             font-weight: 600;
-            font-size: 0.9rem;
+            font-size: 0.97rem;
+            background: #e5e7eb;
+            color: #22314a;
         }
-        .match-excellent { background: #dcfce7; color: #166534; }
+        .match-excellent { background: #e0f2fe; color: #0369a1; }
         .match-very-good { background: #dbeafe; color: #1e40af; }
         .match-good { background: #fef3c7; color: #92400e; }
         .match-fair { background: #fed7aa; color: #9a3412; }
-        .match-poor { background: #fecaca; color: #991b1b; }
-        .resume-info {
-            background: #f0f9ff;
-            border: 1px solid #0ea5e9;
+        .match-poor { background: #fee2e2; color: #991b1b; }
+        .job-content {
+            padding: 1.5rem 2rem;
+        }
+        .job-description {
+            color: #374151;
+            line-height: 1.7;
+            margin-bottom: 1.2rem;
+            white-space: pre-line;
+        }
+        .job-section {
+            margin-top: 1.2rem;
+            padding-top: 1.2rem;
+            border-top: 1px solid #e5e7eb;
+        }
+        .section-title {
+            font-weight: 700;
+            color: #22314a;
+            margin-bottom: 0.7rem;
+            font-size: 1.01rem;
+        }
+        .section-content {
+            color: #374151;
+            line-height: 1.7;
+        }
+        .skills-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+        }
+        .skill-tag {
+            background: #e5e7eb;
+            color: #22314a;
+            padding: 0.22rem 0.7rem;
+            border-radius: 10px;
+            font-size: 0.87rem;
+            font-weight: 500;
+        }
+        .analysis-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 0.7rem;
+            margin-top: 0.7rem;
+        }
+        .analysis-item {
+            background: #f5f7fa;
+            padding: 0.7rem 1rem;
             border-radius: 6px;
-            padding: 16px;
-            margin-bottom: 24px;
+            border-left: 3px solid #2563eb;
         }
-        .flash-message {
-            padding: 12px;
-            border-radius: 4px;
-            margin-bottom: 16px;
+        .analysis-item strong {
+            display: block;
+            color: #2563eb;
+            margin-bottom: 0.3rem;
+            font-size: 0.93rem;
         }
-        .flash-success { background: #dcfce7; color: #166534; border: 1px solid #22c55e; }
-        .flash-error { background: #fee2e2; color: #991b1b; border: 1px solid #ef4444; }
-        .flash-info { background: #dbeafe; color: #1e40af; border: 1px solid #3b82f6; }
+        .apply-btn {
+            display: inline-block;
+            background: #2563eb;
+            color: #fff;
+            padding: 0.7rem 1.5rem;
+            border-radius: 7px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: background 0.2s;
+            margin-top: 1rem;
+        }
+        .apply-btn:hover {
+            background: #174ea6;
+        }
+        @media (max-width: 768px) {
+            .container { padding: 1rem; }
+            .header h1 { font-size: 1.5rem; }
+            .main-card { padding: 1rem; }
+            .form-grid { grid-template-columns: 1fr; }
+            .job-header, .job-content { padding: 1rem; }
+            .results-table th, .results-table td { padding: 0.7rem 0.4rem; }
+        }
+        .loading { display: none; text-align: center; padding: 2rem; }
+        .spinner {
+            border: 3px solid #e5e7eb;
+            border-top: 3px solid #2563eb;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1rem;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>AI-Powered Job Matcher</h1>
-        
-        {% with messages = get_flashed_messages(with_categories=true) %}
-            {% if messages %}
-                {% for category, message in messages %}
-                    <div class="flash-message flash-{{ category }}">{{ message }}</div>
-                {% endfor %}
+    <div class="container" data-has-results="{% if results %}true{% else %}false{% endif %}">
+        <div class="header">
+            <h1>AI Job Matcher</h1>
+            <p>Find your next opportunity with AI-powered precision</p>
+        </div>
+        <div class="main-card">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="flash-message flash-{{ category }}">{{ message }}</div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+            {% if error %}
+                <div class="error">{{ error }}</div>
             {% endif %}
-        {% endwith %}
-        
-        {% if error %}
-            <div class="error">{{ error }}</div>
-        {% endif %}
-        
-        <form method="post" enctype="multipart/form-data">
-            <label>
-                Job Title
-                <input type="text" name="job_title" value="{{ request.form.job_title or 'Software Engineer Intern' }}">
-            </label>
-            <label>
-                Location
-                <input type="text" name="location" value="{{ request.form.location or 'Herndon, VA' }}">
-            </label>
-            <label>
-                Radius (miles)
-                <input type="number" name="radius" min="1" max="100" value="{{ request.form.radius or 25 }}">
-            </label>
-            <label>
-                Additional Filters
-                <input type="text" name="additional" placeholder="e.g. Python, remote" value="{{ request.form.additional or '' }}">
-            </label>
-            
-            <div class="resume-upload">
-                <h3>📄 Upload Your Resume (Optional)</h3>
-                <p>Upload your resume to get AI-powered job matching scores!</p>
-                <input type="file" name="resume" accept=".pdf" style="margin: 10px 0;">
-                <p style="font-size: 0.9rem; color: #666;">Only PDF files are supported</p>
-            </div>
-            
-            <button type="submit">Search & Match Jobs</button>
-        </form>
-        
+            <form method="post" enctype="multipart/form-data" id="jobSearchForm">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="job_title">Job Title</label>
+                        <input type="text" id="job_title" name="job_title" value="{{ request.form.job_title or 'Software Engineer Intern' }}" placeholder="e.g. Software Engineer">
+                    </div>
+                    <div class="form-group">
+                        <label for="location">Location</label>
+                        <input type="text" id="location" name="location" value="{{ request.form.location or 'Herndon, VA' }}" placeholder="e.g. New York, NY">
+                    </div>
+                    <div class="form-group">
+                        <label for="radius">Radius (miles)</label>
+                        <input type="number" id="radius" name="radius" min="1" max="100" value="{{ request.form.radius or 25 }}" placeholder="25">
+                    </div>
+                    <div class="form-group">
+                        <label for="additional">Additional Filters</label>
+                        <input type="text" id="additional" name="additional" placeholder="e.g. Python, remote" value="{{ request.form.additional or '' }}">
+                    </div>
+                    <div class="resume-upload">
+                        <h3>Upload Resume</h3>
+                        <p>Get AI-powered job matching scores and recommendations</p>
+                        <input type="file" name="resume" accept=".pdf" style="margin: 6px 0; font-size: 0.8rem;">
+                        <p style="font-size: 0.75rem; color: #6b7280; margin: 4px 0 0 0;">PDF files only</p>
+                    </div>
+                    <button type="submit" class="search-btn">Search Jobs</button>
+                </div>
+            </form>
+        </div>
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <p>Analyzing jobs and calculating match scores...</p>
+        </div>
         {% if resume_data %}
-        <div class="resume-info">
-            <h3>📋 Resume Analysis</h3>
-            <p><strong>Skills:</strong> {{ resume_data.skills|join(', ') if resume_data.skills else 'None detected' }}</p>
-            <p><strong>Education:</strong> {{ resume_data.education if resume_data.education else 'Not specified' }}</p>
-            <p><strong>Experience:</strong> {{ resume_data.experience|length }} items detected</p>
-            <p><strong>Projects:</strong> {{ resume_data.projects|length }} projects found</p>
+        <div class="main-card">
+            <div class="resume-info">
+                <h3>Resume Summary</h3>
+                <p><strong>Skills:</strong> {{ resume_data.skills|join(', ') if resume_data.skills else 'None detected' }}</p>
+                <p><strong>Education:</strong> {{ resume_data.education if resume_data.education else 'Not specified' }}</p>
+                <p><strong>Experience:</strong> {{ resume_data.experience|length }} items detected</p>
+                <p><strong>Projects:</strong> {{ resume_data.projects|length }} projects found</p>
+            </div>
         </div>
         {% endif %}
-        
         {% if results %}
-            <table class="results-table">
-                <thead>
-                    <tr>
-                        {% if resume_data %}
-                        <th>Match Score</th>
-                        {% endif %}
-                        <th>Job Title</th>
-                        <th>Company</th>
-                        <th>Location</th>
-                        <th>Apply</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for job in results %}
-                    <tr>
-                        {% if resume_data %}
-                        <td>
-                            {% if job.match_score is defined %}
-                                {% set score = job.match_score %}
-                                {% if score >= 90 %}
-                                    <span class="match-score match-excellent">{{ score }}%</span>
-                                {% elif score >= 80 %}
-                                    <span class="match-score match-very-good">{{ score }}%</span>
-                                {% elif score >= 70 %}
-                                    <span class="match-score match-good">{{ score }}%</span>
-                                {% elif score >= 60 %}
-                                    <span class="match-score match-fair">{{ score }}%</span>
+        <div class="main-card">
+            <div class="results-header">
+                <h2>Job Matches</h2>
+                <div class="results-count">{{ results|length }} jobs found</div>
+            </div>
+            <div class="results-table-wrapper">
+                <table class="results-table">
+                    <thead>
+                        <tr>
+                            {% if resume_data %}
+                            <th style="width: 90px;">Match</th>
+                            {% endif %}
+                            <th>Job Title</th>
+                            <th>Company</th>
+                            <th>Location</th>
+                            <th style="width: 110px;">Apply</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for job in results %}
+                        <tr>
+                            {% if resume_data %}
+                            <td class="match-cell">
+                                {% if job.match_score is defined %}
+                                    {% set score = job.match_score %}
+                                    {% if score >= 90 %}
+                                        <span class="match-score match-excellent">{{ score }}%</span>
+                                    {% elif score >= 80 %}
+                                        <span class="match-score match-very-good">{{ score }}%</span>
+                                    {% elif score >= 70 %}
+                                        <span class="match-score match-good">{{ score }}%</span>
+                                    {% elif score >= 60 %}
+                                        <span class="match-score match-fair">{{ score }}%</span>
+                                    {% else %}
+                                        <span class="match-score match-poor">{{ score }}%</span>
+                                    {% endif %}
                                 {% else %}
-                                    <span class="match-score match-poor">{{ score }}%</span>
+                                    <span style="color: #999;">N/A</span>
                                 {% endif %}
-                            {% else %}
-                                <span style="color: #999;">N/A</span>
+                            </td>
                             {% endif %}
-                        </td>
-                        {% endif %}
-                        <td>{{ job.job_title or job.title or 'N/A' }}</td>
-                        <td>{{ job.company_name or job.employer_name or job.company or 'N/A' }}</td>
-                        <td>{{ job.location or job.job_location or 'N/A' }}</td>
-                        <td>
-                            {% if job.job_apply_link %}
-                            <a href="{{ job.job_apply_link }}" target="_blank">Apply</a>
-                            {% elif job.apply_link %}
-                            <a href="{{ job.apply_link }}" target="_blank">Apply</a>
-                            {% elif job.job_url %}
-                            <a href="{{ job.job_url }}" target="_blank">Apply</a>
-                            {% else %}
-                            <span style="color: #999;">No link</span>
-                            {% endif %}
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+                            <td class="job-title-cell">
+                                <div class="job-title-main">{{ job.job_title or job.title or 'N/A' }}</div>
+                                <div class="job-title-sub">
+                                    {% if job.job_required_skills or job.skills %}
+                                        <span class="skills-list">{{ (job.job_required_skills or job.skills or [])|join(', ') }}</span>
+                                    {% endif %}
+                                </div>
+                            </td>
+                            <td class="company-cell">{{ job.company_name or job.employer_name or job.company or 'N/A' }}</td>
+                            <td class="location-cell">{{ job.location or job.job_location or 'N/A' }}</td>
+                            <td class="apply-cell">
+                                {% if job.job_apply_link %}
+                                <a href="{{ job.job_apply_link }}" target="_blank" class="apply-btn">Apply</a>
+                                {% elif job.apply_link %}
+                                <a href="{{ job.apply_link }}" target="_blank" class="apply-btn">Apply</a>
+                                {% elif job.job_url %}
+                                <a href="{{ job.job_url }}" target="_blank" class="apply-btn">Apply</a>
+                                {% else %}
+                                <span style="color: #999;">No link</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
             {% for job in results %}
-            <div class="job-box">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-                    <div>
-                        <div class="job-title">{{ job.job_title or job.title or 'N/A' }}</div>
-                        <div class="company">{{ job.company_name or job.employer_name or job.company or 'N/A' }}</div>
-                        <div class="location">{{ job.location or job.job_location or 'N/A' }}</div>
+            <div class="job-card">
+                <div class="job-header">
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 1rem;">
+                        <div style="flex: 1;">
+                            <div class="job-title">{{ job.job_title or job.title or 'N/A' }}</div>
+                            <div class="job-meta">
+                                <div class="job-meta-item">
+                                    {{ job.company_name or job.employer_name or job.company or 'N/A' }}
+                                </div>
+                                <div class="job-meta-item">
+                                    {{ job.location or job.job_location or 'N/A' }}
+                                </div>
+                            </div>
+                        </div>
+                        {% if resume_data and job.match_score is defined %}
+                        <div>
+                            {% set score = job.match_score %}
+                            {% if score >= 90 %}
+                                <span class="match-score match-excellent">{{ score }}% Match</span>
+                            {% elif score >= 80 %}
+                                <span class="match-score match-very-good">{{ score }}% Match</span>
+                            {% elif score >= 70 %}
+                                <span class="match-score match-good">{{ score }}% Match</span>
+                            {% elif score >= 60 %}
+                                <span class="match-score match-fair">{{ score }}% Match</span>
+                            {% else %}
+                                <span class="match-score match-poor">{{ score }}% Match</span>
+                            {% endif %}
+                        </div>
+                        {% endif %}
                     </div>
-                    {% if resume_data and job.match_score is defined %}
-                    <div style="text-align: right;">
-                        {% set score = job.match_score %}
-                        {% if score >= 90 %}
-                            <span class="match-score match-excellent">{{ score }}% Match</span>
-                        {% elif score >= 80 %}
-                            <span class="match-score match-very-good">{{ score }}% Match</span>
-                        {% elif score >= 70 %}
-                            <span class="match-score match-good">{{ score }}% Match</span>
-                        {% elif score >= 60 %}
-                            <span class="match-score match-fair">{{ score }}% Match</span>
-                        {% else %}
-                            <span class="match-score match-poor">{{ score }}% Match</span>
+                </div>
+                <div class="job-content">
+                    {% if job.job_description %}
+                        <div class="job-description">{{ job.job_description }}</div>
+                    {% endif %}
+                    {% if resume_data and job.match_analysis %}
+                    <div class="job-section">
+                        <div class="section-title">AI Match Analysis</div>
+                        <div class="section-content">
+                            <p><strong>Analysis:</strong> {{ job.match_analysis.detailed_analysis }}</p>
+                        </div>
+                    </div>
+                    {% endif %}
+                    {% if job.job_required_skills or job.skills %}
+                    <div class="job-section">
+                        <div class="section-title">Required Skills</div>
+                        <div class="skills-tags">
+                            {% for skill in (job.job_required_skills or job.skills or []) %}
+                            <span class="skill-tag">{{ skill }}</span>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endif %}
+                    {% if job.job_apply_link or job.apply_link %}
+                    <div style="text-align: center; margin-top: 2rem;">
+                        {% if job.job_apply_link %}
+                        <a href="{{ job.job_apply_link }}" target="_blank" class="apply-btn">Apply Now</a>
+                        {% elif job.apply_link %}
+                        <a href="{{ job.apply_link }}" target="_blank" class="apply-btn">Apply Now</a>
                         {% endif %}
                     </div>
                     {% endif %}
                 </div>
-                {% if job.job_description %}
-                    <div class="desc">{{ job.job_description }}</div>
-                {% endif %}
-                {% if resume_data and job.match_analysis %}
-                <div class="job-section">
-                    <div class="section-title">AI Match Analysis</div>
-                    <div class="section-content">
-                        <p><strong>Analysis:</strong> {{ job.match_analysis.detailed_analysis }}</p>
-                        {% if job.match_analysis.strengths %}
-                        <p><strong>Strengths:</strong> {{ job.match_analysis.strengths|join(', ') }}</p>
-                        {% endif %}
-                        {% if job.match_analysis.gaps %}
-                        <p><strong>Gaps:</strong> {{ job.match_analysis.gaps|join(', ') }}</p>
-                        {% endif %}
-                        {% if job.match_analysis.recommendations %}
-                        <p><strong>Recommendations:</strong> {{ job.match_analysis.recommendations|join(', ') }}</p>
-                        {% endif %}
-                    </div>
-                </div>
-                {% endif %}
-                
-                {% if job.job_apply_link %}
-                <a class="apply-link" href="{{ job.job_apply_link }}" target="_blank">Apply Now</a>
-                {% elif job.apply_link %}
-                <a class="apply-link" href="{{ job.apply_link }}" target="_blank">Apply Now</a>
-                {% endif %}
-                {% if job.job_required_skills %}
-                <div class="skills"><b>Skills:</b> {{ job.job_required_skills|join(', ') }}</div>
-                {% elif job.skills %}
-                <div class="skills"><b>Skills:</b> {{ job.skills|join(', ') }}</div>
-                {% endif %}
             </div>
             {% endfor %}
+        </div>
         {% endif %}
     </div>
+    <script>
+        document.getElementById('jobSearchForm').addEventListener('submit', function() {
+            document.getElementById('loading').style.display = 'block';
+            setTimeout(function() {
+                var fileInput = document.querySelector('input[type="file"]');
+                if (fileInput) { fileInput.value = ''; }
+            }, 1000);
+        });
+        var container = document.querySelector('.container');
+        var hasResults = container.getAttribute('data-has-results') === 'true';
+        if (hasResults) {
+            setTimeout(function() {
+                var resultsHeader = document.querySelector('.results-header');
+                if (resultsHeader) {
+                    resultsHeader.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            }, 500);
+        }
+    </script>
 </body>
 </html> 
