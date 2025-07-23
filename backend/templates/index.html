@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Job Search</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: #f7f9fa;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 800px;
+            margin: 40px auto;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+            padding: 32px 24px 24px 24px;
+        }
+        h1 {
+            text-align: center;
+            color: #222;
+        }
+        form {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+            margin-bottom: 32px;
+            justify-content: center;
+        }
+        label {
+            flex: 1 1 180px;
+            display: flex;
+            flex-direction: column;
+            font-weight: 500;
+            color: #333;
+        }
+        input[type="text"], input[type="number"] {
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            margin-top: 4px;
+        }
+        button {
+            background: #2563eb;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            padding: 10px 24px;
+            font-size: 1rem;
+            cursor: pointer;
+            margin-top: 24px;
+        }
+        button:hover {
+            background: #174ea6;
+        }
+        .error {
+            color: #b91c1c;
+            background: #fee2e2;
+            border: 1px solid #fca5a5;
+            padding: 12px;
+            border-radius: 4px;
+            margin-bottom: 24px;
+            text-align: center;
+        }
+        .results-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 32px;
+        }
+        .results-table th, .results-table td {
+            border: 1px solid #e5e7eb;
+            padding: 8px 12px;
+            text-align: left;
+        }
+        .results-table th {
+            background: #f1f5f9;
+        }
+        .job-box {
+            background: #f9fafb;
+            border: 1px solid #e5e7eb;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            padding: 18px 20px;
+        }
+        .job-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #2563eb;
+        }
+        .company {
+            color: #555;
+            font-weight: 500;
+        }
+        .location {
+            color: #666;
+        }
+        .apply-link {
+            display: inline-block;
+            margin-top: 8px;
+            color: #fff;
+            background: #22c55e;
+            padding: 7px 16px;
+            border-radius: 4px;
+            text-decoration: none;
+            font-weight: 500;
+        }
+        .apply-link:hover {
+            background: #15803d;
+        }
+        .skills {
+            margin-top: 8px;
+            color: #0e7490;
+        }
+        .desc {
+            margin-top: 10px;
+            color: #222;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Job Search</h1>
+        {% if error %}
+            <div class="error">{{ error }}</div>
+        {% endif %}
+        <form method="post">
+            <label>
+                Job Title
+                <input type="text" name="job_title" value="{{ request.form.job_title or 'Software Engineer Intern' }}">
+            </label>
+            <label>
+                Location
+                <input type="text" name="location" value="{{ request.form.location or 'Herndon, VA' }}">
+            </label>
+            <label>
+                Radius (miles)
+                <input type="number" name="radius" min="1" max="100" value="{{ request.form.radius or 25 }}">
+            </label>
+            <label>
+                Additional Filters
+                <input type="text" name="additional" placeholder="e.g. Python, remote" value="{{ request.form.additional or '' }}">
+            </label>
+            <button type="submit">Search</button>
+        </form>
+        {% if results %}
+            <table class="results-table">
+                <thead>
+                    <tr>
+                        <th>Job Title</th>
+                        <th>Company</th>
+                        <th>Location</th>
+                        <th>Apply</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for job in results %}
+                    <tr>
+                        <td>{{ job.job_title }}</td>
+                        <td>{{ job.company_name }}</td>
+                        <td>{{ job.location }}</td>
+                        <td><a href="{{ job.apply_link }}" target="_blank">Apply</a></td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% for job in results %}
+            <div class="job-box">
+                <div class="job-title">{{ job.job_title }}</div>
+                <div class="company">{{ job.company_name }}</div>
+                <div class="location">{{ job.location }}</div>
+                {% if job.job_description %}
+                <div class="desc">{{ job.job_description }}</div>
+                {% endif %}
+                {% if job.job_apply_link %}
+                <a class="apply-link" href="{{ job.job_apply_link }}" target="_blank">Apply Now</a>
+                {% elif job.apply_link %}
+                <a class="apply-link" href="{{ job.apply_link }}" target="_blank">Apply Now</a>
+                {% endif %}
+                {% if job.job_required_skills %}
+                <div class="skills"><b>Skills:</b> {{ job.job_required_skills|join(', ') }}</div>
+                {% elif job.skills %}
+                <div class="skills"><b>Skills:</b> {{ job.skills|join(', ') }}</div>
+                {% endif %}
+            </div>
+            {% endfor %}
+        {% endif %}
+    </div>
+</body>
+</html> 
