@@ -1,3 +1,5 @@
 Flask
 requests
-python-dotenv 
+python-dotenv
+google-generativeai
+PyPDF2 
