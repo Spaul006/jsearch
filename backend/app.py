@@ -4,6 +4,7 @@ import requests
 from dotenv import load_dotenv
 import re
 from resume_processor import extract_text_from_pdf, parse_resume_with_gemini, rank_jobs_by_match_async, is_gemini_available
+from generate_cover_letter import generate_cover_letter_bp
 
 # Load environment variables from .env file in backend directory
 load_dotenv()
@@ -155,6 +156,8 @@ def index():
             error = f'Error fetching jobs: {str(e)}'
     
     return render_template('index.html', error=error, results=results, resume_data=resume_data)
+
+app.register_blueprint(generate_cover_letter_bp)
 
 if __name__ == '__main__':
     app.run(debug=True) 

@@ -451,7 +451,9 @@
                             </td>
                             {% endif %}
                             <td class="job-title-cell">
-                                <div class="job-title-main">{{ job.job_title or job.title or 'N/A' }}</div>
+                                <div class="job-title-main">
+                                    <a href="#job-detail-{{ loop.index0 }}" class="job-title-link">{{ job.job_title or job.title or 'N/A' }}</a>
+                                </div>
                                 <div class="job-title-sub">
                                     {% if job.job_required_skills or job.skills %}
                                         <span class="skills-list">{{ (job.job_required_skills or job.skills or [])|join(', ') }}</span>
@@ -477,7 +479,7 @@
                 </table>
             </div>
             {% for job in results %}
-            <div class="job-card">
+            <div class="job-card" id="job-detail-{{ loop.index0 }}">
                 <div class="job-header">
                     <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 1rem;">
                         <div style="flex: 1;">
@@ -531,15 +533,16 @@
                         </div>
                     </div>
                     {% endif %}
-                    {% if job.job_apply_link or job.apply_link %}
-                    <div style="text-align: center; margin-top: 2rem;">
-                        {% if job.job_apply_link %}
-                        <a href="{{ job.job_apply_link }}" target="_blank" class="apply-btn">Apply Now</a>
-                        {% elif job.apply_link %}
-                        <a href="{{ job.apply_link }}" target="_blank" class="apply-btn">Apply Now</a>
+                    <div style="display: flex; justify-content: center; gap: 1.5rem; margin-top: 2rem; flex-wrap: wrap;">
+                        {% if job.job_apply_link or job.apply_link %}
+                            {% if job.job_apply_link %}
+                            <a href="{{ job.job_apply_link }}" target="_blank" class="apply-btn">Apply Now</a>
+                            {% elif job.apply_link %}
+                            <a href="{{ job.apply_link }}" target="_blank" class="apply-btn">Apply Now</a>
+                            {% endif %}
                         {% endif %}
+                        <button class="cover-letter-btn" data-job-index="{{ loop.index0 }}">Generate Cover Letter</button>
                     </div>
-                    {% endif %}
                 </div>
             </div>
             {% endfor %}
@@ -565,5 +568,36 @@
             }, 500);
         }
     </script>
+
+{# Modal HTML #}
+<div id="coverLetterModal" class="cover-letter-modal" style="display:none;">
+    <div class="cover-letter-modal-backdrop"></div>
+    <div class="cover-letter-modal-content">
+        <button class="cover-letter-modal-close" id="coverLetterModalClose" aria-label="Close">&times;</button>
+        <div id="coverLetterModalBody">
+            <div class="cover-letter-modal-loading" id="coverLetterModalLoading">
+                <div class="spinner"></div>
+                <p>Generating your cover letter...</p>
+            </div>
+            <div class="cover-letter-modal-result" id="coverLetterModalResult" style="display:none;"></div>
+        </div>
+    </div>
+</div>
+
+<link rel="stylesheet" href="/static/cover_letter_modal.css">
+<script src="/static/cover_letter_modal.js"></script>
+
+{% if results %}
+<script>
+window.allJobData = [{% for job in results %}{job_title: {{ (job.job_title or job.title or 'N/A')|tojson }}, company: {{ (job.company_name or job.employer_name or job.company or 'N/A')|tojson }}, location: {{ (job.location or job.job_location or 'N/A')|tojson }}, job_description: {{ (job.job_description or '')|tojson }}, job_required_skills: {{ (job.job_required_skills or job.skills or [])|tojson }}}{% if not loop.last %},{% endif %}{% endfor %}];
+</script>
+{% endif %}
+
+{% if resume_data %}
+<script>
+window.resumeData = {{ resume_data|tojson }};
+</script>
+{% endif %}
+
 </body>
 </html> 
