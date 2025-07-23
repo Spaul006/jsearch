@@ -158,19 +158,29 @@
                 <tbody>
                     {% for job in results %}
                     <tr>
-                        <td>{{ job.job_title }}</td>
-                        <td>{{ job.company_name }}</td>
-                        <td>{{ job.location }}</td>
-                        <td><a href="{{ job.apply_link }}" target="_blank">Apply</a></td>
+                        <td>{{ job.job_title or job.title or 'N/A' }}</td>
+                        <td>{{ job.company_name or job.employer_name or job.company or 'N/A' }}</td>
+                        <td>{{ job.location or job.job_location or 'N/A' }}</td>
+                        <td>
+                            {% if job.job_apply_link %}
+                            <a href="{{ job.job_apply_link }}" target="_blank">Apply</a>
+                            {% elif job.apply_link %}
+                            <a href="{{ job.apply_link }}" target="_blank">Apply</a>
+                            {% elif job.job_url %}
+                            <a href="{{ job.job_url }}" target="_blank">Apply</a>
+                            {% else %}
+                            <span style="color: #999;">No link</span>
+                            {% endif %}
+                        </td>
                     </tr>
                     {% endfor %}
                 </tbody>
             </table>
             {% for job in results %}
             <div class="job-box">
-                <div class="job-title">{{ job.job_title }}</div>
-                <div class="company">{{ job.company_name }}</div>
-                <div class="location">{{ job.location }}</div>
+                <div class="job-title">{{ job.job_title or job.title or 'N/A' }}</div>
+                <div class="company">{{ job.company_name or job.employer_name or job.company or 'N/A' }}</div>
+                <div class="location">{{ job.location or job.job_location or 'N/A' }}</div>
                 {% if job.job_description %}
                 <div class="desc">{{ job.job_description }}</div>
                 {% endif %}

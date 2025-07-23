@@ -10,7 +10,7 @@ app = Flask(__name__)
 app.secret_key = os.environ.get('FLASK_SECRET_KEY', 'public_demo_secret')
 
 # Get API key from environment, with fallback to hardcoded demo key
-RAPIDAPI_KEY = os.environ.get('RAPIDAPI_KEY')
+RAPIDAPI_KEY = os.environ.get('RAPIDAPI_KEY', 'demo_key_for_testing')
 RAPIDAPI_HOST = 'jsearch.p.rapidapi.com'
 API_URL = 'https://jsearch.p.rapidapi.com/search'
 
@@ -50,6 +50,7 @@ def index():
             results = data.get('data', [])
             if not results:
                 error = 'No jobs found. Try different filters.'
+
         except Exception as e:
             error = f'Error fetching jobs: {str(e)}'
     return render_template('index.html', error=error, results=results)

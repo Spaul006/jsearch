@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Job Scraper Flask App
 
 A minimal Flask web app to search for internship jobs using the jsearch API.
@@ -30,3 +31,6 @@ A minimal Flask web app to search for internship jobs using the jsearch API.
 - The app uses the [jsearch.p.rapidapi.com](https://rapidapi.com/letscrape-6bRBa3QguO5/api/jsearch) endpoint.
 - API key is required and must be kept secret.
 - For production, set `debug=False` in `app.py`. 
+=======
+# jsearch
+>>>>>>> 4d6f4e633a6547117a53c194ffacc83a33486185
