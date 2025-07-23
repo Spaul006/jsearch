@@ -1,5 +1,6 @@
 import os
 import json
+import asyncio
 import google.generativeai as genai
 from dotenv import load_dotenv
 import PyPDF2
@@ -81,10 +82,83 @@ def parse_resume_with_gemini(resume_text):
         print(f"Gemini API error parsing resume: {e}")
         return None
 
-def calculate_job_match_score(resume_data, job_description, job_title):
-    """Use Gemini to calculate a match score between resume and job"""
+async def calculate_job_match_score_async(resume_data, job_description, job_title):
+    """Async version: Use Gemini to calculate a match score between resume and job"""
     if not resume_data or not job_description or not gemini_model:
-        return 0
+        return None
+    
+    try:
+        # Convert resume data to readable format
+        resume_summary = f"""
+        Skills: {', '.join(resume_data.get('skills', []))}
+        Experience: {', '.join(resume_data.get('experience', []))}
+        Education: {resume_data.get('education', 'N/A')}
+        Projects: {', '.join(resume_data.get('projects', []))}
+        Interests: {', '.join(resume_data.get('interests', []))}
+        """
+        
+        prompt = f"""
+        Analyze the match between this candidate's resume and the job description.
+        
+        Candidate Profile:
+        {resume_summary}
+        
+        Job Title: {job_title}
+        Job Description:
+        {job_description[:3000]}
+        
+        Please provide a comprehensive match analysis and score.
+        
+        Return the result as a JSON object with this structure:
+        {{
+            "overall_score": 85,
+            "skills_match": 90,
+            "experience_match": 75,
+            "education_match": 80,
+            "detailed_analysis": "Detailed explanation of the match...",
+            "strengths": ["strength1", "strength2"],
+            "gaps": ["gap1", "gap2"],
+            "recommendations": ["recommendation1", "recommendation2"]
+        }}
+        
+        Scoring guidelines:
+        - 90-100: Excellent match
+        - 80-89: Very good match
+        - 70-79: Good match
+        - 60-69: Fair match
+        - Below 60: Poor match
+        
+        Be honest and specific about the match quality.
+        """
+        
+        # Run the Gemini API call in a thread pool to avoid blocking
+        loop = asyncio.get_event_loop()
+        response = await loop.run_in_executor(None, lambda: gemini_model.generate_content(prompt))
+        
+        # Parse the JSON response
+        try:
+            result = json.loads(response.text)
+            return result
+        except json.JSONDecodeError:
+            # Try to extract JSON from markdown
+            try:
+                import re
+                json_match = re.search(r'```json\s*(.*?)\s*```', response.text, re.DOTALL)
+                if json_match:
+                    result = json.loads(json_match.group(1))
+                    return result
+            except Exception:
+                pass
+            return None
+            
+    except Exception as e:
+        print(f"Gemini API error calculating match: {e}")
+        return None
+
+def calculate_job_match_score(resume_data, job_description, job_title):
+    """Synchronous wrapper for backward compatibility"""
+    if not resume_data or not job_description or not gemini_model:
+        return None
     
     try:
         # Convert resume data to readable format
@@ -152,8 +226,56 @@ def calculate_job_match_score(resume_data, job_description, job_title):
         print(f"Gemini API error calculating match: {e}")
         return None
 
+async def rank_jobs_by_match_async(resume_data, jobs):
+    """Async version: Rank jobs by their match score with the resume (parallel processing)"""
+    if not resume_data or not jobs:
+        return jobs
+    
+    print(f"🔍 Ranking {len(jobs)} jobs against resume (parallel processing)...")
+    
+    # Create tasks for all jobs
+    tasks = []
+    for i, job in enumerate(jobs):
+        if 'job_description' in job and job['job_description']:
+            task = asyncio.create_task(
+                process_job_match_async(resume_data, job, i + 1)
+            )
+            tasks.append(task)
+        else:
+            job['match_score'] = 0
+            job['match_analysis'] = None
+    
+    # Wait for all tasks to complete
+    if tasks:
+        await asyncio.gather(*tasks)
+    
+    # Sort jobs by match score (highest first)
+    jobs.sort(key=lambda x: x.get('match_score', 0), reverse=True)
+    
+    return jobs
+
+async def process_job_match_async(resume_data, job, job_number):
+    """Process a single job match asynchronously"""
+    job_title = job.get('job_title', job.get('title', 'Unknown'))
+    print(f"  Analyzing job {job_number}: {job_title}")
+    
+    match_data = await calculate_job_match_score_async(
+        resume_data, 
+        job['job_description'],
+        job_title
+    )
+    
+    if match_data:
+        job['match_score'] = match_data.get('overall_score', 0)
+        job['match_analysis'] = match_data
+        print(f"    ✅ Match score: {job['match_score']}/100")
+    else:
+        job['match_score'] = 0
+        job['match_analysis'] = None
+        print(f"    ❌ Could not calculate match score")
+
 def rank_jobs_by_match(resume_data, jobs):
-    """Rank jobs by their match score with the resume"""
+    """Synchronous wrapper for backward compatibility"""
     if not resume_data or not jobs:
         return jobs
     

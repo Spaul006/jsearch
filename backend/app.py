@@ -4,7 +4,7 @@ import requests
 from dotenv import load_dotenv
 import re
 from werkzeug.utils import secure_filename
-from resume_processor import extract_text_from_pdf, parse_resume_with_gemini, rank_jobs_by_match, is_gemini_available
+from resume_processor import extract_text_from_pdf, parse_resume_with_gemini, rank_jobs_by_match_async, is_gemini_available
 
 # Load environment variables from .env file in backend directory
 load_dotenv()
@@ -145,7 +145,8 @@ def index():
                 # If resume was uploaded, rank jobs by match score
                 if resume_data:
                     print("🔍 Ranking jobs by resume match...")
-                    results = rank_jobs_by_match(resume_data, results)
+                    import asyncio
+                    results = asyncio.run(rank_jobs_by_match_async(resume_data, results))
                     flash(f'Jobs ranked by match score! Found {len(results)} jobs.', 'success')
                 else:
                     flash(f'Found {len(results)} jobs. Upload a resume to see match scores!', 'info')
