@@ -126,10 +126,13 @@ const App: React.FC = () => {
       console.log('Gemini extracted filters:', data.filters);
       // Optionally auto-fill filter fields
       if (data.filters) {
-        if (data.filters.job_title) setJobTitle(data.filters.job_title);
-        if (data.filters.location) setLocation(data.filters.location);
-        if (data.filters.additional) setAdditional(data.filters.additional);
-        // You can add more mappings as needed
+        // Log the extracted filters for debugging
+        console.log('Extracted filters for mapping:', data.filters);
+        // Robust mapping: handle both snake_case and camelCase
+        setJobTitle(data.filters.job_title || data.filters.jobTitle || '');
+        setLocation(data.filters.location || '');
+        setAdditional(data.filters.additional || '');
+        // Add more mappings if needed
       }
     } catch (err) {
       console.error('Error extracting filters with Gemini:', err);
