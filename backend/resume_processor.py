@@ -320,3 +320,44 @@ def rank_jobs_by_match(resume_data, jobs):
 def is_gemini_available():
     """Check if Gemini API is available and configured"""
     return gemini_model is not None 
+
+
+def extract_filters_with_gemini(user_text):
+    """Use Gemini to extract job search filters from user input text"""
+    print(f"🔍 extract_filters_with_gemini called with text: {user_text}")
+    if not user_text or not gemini_model:
+        print(f"🔍 Skipping filter extraction - text: {bool(user_text)}, gemini: {bool(gemini_model)}")
+        return None
+    try:
+        prompt = f"""
+        The user has described the type of job or internship they are looking for:
+        {user_text}
+
+        Based on this, extract the following filters as a JSON object:
+        {{
+            "job_title": string or null,
+            "location": string or null,
+            "employment_type": string or null,  // e.g. INTERN, FULL_TIME, PART_TIME
+            "keywords": [string],
+            "additional": string or null
+        }}
+        Return ONLY valid JSON. Do NOT include any commentary, markdown, or extra formatting. The response must be a single valid JSON object and nothing else.
+        """
+        response = gemini_model.generate_content(prompt)
+        print(f"🔍 Gemini raw response: {response.text}")
+        import re
+        json_str = response.text.strip()
+        # Try to extract JSON from markdown block if present
+        json_match = re.search(r'```json\s*(.*?)\s*```', json_str, re.DOTALL)
+        if json_match:
+            json_str = json_match.group(1)
+        try:
+            result = json.loads(json_str)
+            print(f"✅ Extracted filters: {result}")
+            return result
+        except Exception as e:
+            print(f"❌ Failed to parse JSON from Gemini response: {e}")
+            return None
+    except Exception as e:
+        print(f"Gemini API error extracting filters: {e}")
+        return None 

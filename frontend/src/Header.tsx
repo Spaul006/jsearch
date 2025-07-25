@@ -38,7 +38,7 @@ const Header: React.FC<HeaderProps> = ({
             type="text"
             placeholder="e.g. junior designer, UX"
             value={jobTitle}
-            onChange={e => setJobTitle(e.target.value)}
+            onInput={e => setJobTitle((e.target as HTMLInputElement).value)}
             style={{ width: 160 }}
           />
           <label>WHERE</label>
@@ -46,7 +46,7 @@ const Header: React.FC<HeaderProps> = ({
             type="text"
             placeholder="e.g. Vancouver, Toronto"
             value={location}
-            onChange={e => setLocation(e.target.value)}
+            onInput={e => setLocation((e.target as HTMLInputElement).value)}
             style={{ width: 160 }}
           />
           <input
@@ -54,7 +54,7 @@ const Header: React.FC<HeaderProps> = ({
             min={1}
             max={100}
             value={radius}
-            onChange={e => setRadius(Number(e.target.value))}
+            onInput={e => setRadius(Number((e.target as HTMLInputElement).value))}
             style={{ width: 60 }}
             title="Radius (miles)"
           />
@@ -62,7 +62,7 @@ const Header: React.FC<HeaderProps> = ({
             type="text"
             placeholder="Additional filters"
             value={additional}
-            onChange={e => setAdditional(e.target.value)}
+            onInput={e => setAdditional((e.target as HTMLInputElement).value)}
             style={{ width: 120 }}
           />
         </div>

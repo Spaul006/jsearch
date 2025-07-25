@@ -1,17 +1,28 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import JobCard from './JobCard';
 
 interface JobListProps {
   jobs: any[];
   loading?: boolean;
   onGenerateCoverLetter?: (idx: number) => void;
+  expandedIdx?: number | null;
+  setExpandedIdx?: (idx: number | null) => void;
 }
 
-const JobList: React.FC<JobListProps> = ({ jobs, loading, onGenerateCoverLetter }) => {
-  const [expandedIdx, setExpandedIdx] = useState<number | null>(null);
+const JobList: React.FC<JobListProps> = ({ jobs, loading, onGenerateCoverLetter, expandedIdx, setExpandedIdx }) => {
+  const [localExpandedIdx, setLocalExpandedIdx] = useState<number | null>(null);
+  const actualExpandedIdx = expandedIdx !== undefined ? expandedIdx : localExpandedIdx;
+  const actualSetExpandedIdx = setExpandedIdx || setLocalExpandedIdx;
+
+  const cardRefs = useRef<(HTMLDivElement | null)[]>([]);
+  useEffect(() => {
+    if (actualExpandedIdx !== null && cardRefs.current[actualExpandedIdx]) {
+      cardRefs.current[actualExpandedIdx]?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }, [actualExpandedIdx]);
 
   const handleExpand = (idx: number) => {
-    setExpandedIdx(expandedIdx === idx ? null : idx);
+    actualSetExpandedIdx(actualExpandedIdx === idx ? null : idx);
   };
 
   return (
@@ -27,19 +38,23 @@ const JobList: React.FC<JobListProps> = ({ jobs, loading, onGenerateCoverLetter 
       ) : (
         <div className="job-list">
           {jobs.map((job, idx) => (
-            <JobCard
+            <div
               key={idx}
-              company={job.company_name || job.employer_name || job.company || 'N/A'}
-              title={job.job_title || job.title || 'N/A'}
-              location={job.location || job.job_location || 'N/A'}
-              posted={job.posted_at || job.date_posted || job.posted || ''}
-              companyLogo={null}
-              highlight={idx === 0}
-              expanded={expandedIdx === idx}
-              onExpand={() => handleExpand(idx)}
-              job={job}
-              onGenerateCoverLetter={onGenerateCoverLetter ? () => onGenerateCoverLetter(idx) : undefined}
-            />
+              ref={el => { cardRefs.current[idx] = el; }}
+            >
+              <JobCard
+                company={job.company_name || job.employer_name || job.company || 'N/A'}
+                title={job.job_title || job.title || 'N/A'}
+                location={job.location || job.job_location || 'N/A'}
+                posted={job.posted_at || job.date_posted || job.posted || ''}
+                companyLogo={null}
+                highlight={actualExpandedIdx === idx}
+                expanded={actualExpandedIdx === idx}
+                onExpand={() => handleExpand(idx)}
+                job={job}
+                onGenerateCoverLetter={onGenerateCoverLetter ? () => onGenerateCoverLetter(idx) : undefined}
+              />
+            </div>
           ))}
         </div>
       )}

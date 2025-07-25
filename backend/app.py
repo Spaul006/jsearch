@@ -3,7 +3,7 @@ from flask import Flask, render_template, request, flash, redirect, url_for, jso
 import requests
 from dotenv import load_dotenv
 import re
-from resume_processor import extract_text_from_pdf, parse_resume_with_gemini, rank_jobs_by_match_async, is_gemini_available
+from resume_processor import extract_text_from_pdf, parse_resume_with_gemini, rank_jobs_by_match_async, is_gemini_available, extract_filters_with_gemini
 from generate_cover_letter import generate_cover_letter_bp
 
 # Load environment variables from .env file in backend directory
@@ -227,6 +227,15 @@ def api_search_jobs():
         'resume_data': resume_data,
         'error': error
     })
+
+@app.route('/api/extract_filters', methods=['POST'])
+def api_extract_filters():
+    data = request.get_json()
+    user_text = data.get('user_text', '') if data else ''
+    print(f"[API] Received user_text for filter extraction: {user_text}")
+    filters = extract_filters_with_gemini(user_text)
+    print(f"[API] Returning extracted filters: {filters}")
+    return jsonify({'filters': filters}), 200
 
 app.register_blueprint(generate_cover_letter_bp)
 
