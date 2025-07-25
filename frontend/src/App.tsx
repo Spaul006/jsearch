@@ -1,7 +1,9 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import Header from './Header';
 import SuggestedJobs from './SuggestedJobs';
-import Sidebar from './Sidebar';
+import SidebarNav from './SidebarNav';
+import ResumeTab from './ResumeTab';
+import OverviewTab from './OverviewTab';
 import JobList from './JobList';
 
 // Types for job and resume data
@@ -50,6 +52,9 @@ const App: React.FC = () => {
   const [modalJobIndex, setModalJobIndex] = useState<number | null>(null);
   const [coverLetter, setCoverLetter] = useState<string | null>(null);
   const [coverLetterLoading, setCoverLetterLoading] = useState(false);
+
+  // Tab state
+  const [currentTab, setCurrentTab] = useState('jobs');
 
   // Modal close handler
   const closeModal = useCallback(() => {
@@ -148,14 +153,29 @@ const App: React.FC = () => {
         setAdditional={setAdditional}
         onSearch={handleSubmit}
         loading={loading}
+        resumeFile={resumeFile}
+        onResumeUpload={setResumeFile}
       />
       <div className="main-content-row">
-        <Sidebar onResumeUpload={setResumeFile} />
+        <div style={{ minWidth: 180, marginRight: 24 }}>
+          <SidebarNav currentTab={currentTab} onTabChange={setCurrentTab} />
+        </div>
         <div className="main-content-center">
-          {error && <div className="error" style={{marginBottom:'1rem'}}>{error}</div>}
-          <JobList jobs={results} loading={loading} />
+          {currentTab === 'jobs' && (
+            <>
+              {error && <div className="error" style={{marginBottom:'1rem'}}>{error}</div>}
+              <JobList jobs={results} loading={loading} onGenerateCoverLetter={(idx) => { setModalOpen(true); setModalJobIndex(idx); }} />
+            </>
+          )}
+          {currentTab === 'resume' && (
+            <ResumeTab resumeFile={resumeFile} resumeData={resumeData} />
+          )}
+          {currentTab === 'overview' && (
+            <OverviewTab jobs={results} />
+          )}
         </div>
       </div>
+      {/* Cover Letter Modal logic remains unchanged */}
     </div>
   );
 };
