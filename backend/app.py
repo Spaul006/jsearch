@@ -1,5 +1,5 @@
 import os
-from flask import Flask, render_template, request, flash, redirect, url_for
+from flask import Flask, render_template, request, flash, redirect, url_for, jsonify
 import requests
 from dotenv import load_dotenv
 import re
@@ -156,6 +156,77 @@ def index():
             error = f'Error fetching jobs: {str(e)}'
     
     return render_template('index.html', error=error, results=results, resume_data=resume_data)
+
+@app.route('/api/search_jobs', methods=['POST'])
+def api_search_jobs():
+    results = None
+    error = None
+    resume_data = None
+
+    if request.method == 'POST':
+        # Get job search parameters
+        job_title = request.form.get('job_title', 'Software Engineer Intern')
+        location = request.form.get('location', 'Herndon, VA')
+        radius = request.form.get('radius', 25)
+        additional = request.form.get('additional', '')
+        query = job_title
+        if additional:
+            query += f' {additional}'
+
+        params = {
+            'query': query,
+            'location': location,
+            'date_posted': 'week',
+            'employment_types': 'INTERN',
+            'radius': miles_to_km(radius),
+        }
+        headers = {
+            'X-RapidAPI-Key': RAPIDAPI_KEY,
+            'X-RapidAPI-Host': RAPIDAPI_HOST,
+        }
+
+        try:
+            resp = requests.get(API_URL, headers=headers, params=params, timeout=10)
+            resp.raise_for_status()
+            data = resp.json()
+            results = data.get('data', [])
+
+            if results:
+                # Clean job descriptions
+                for job in results:
+                    if 'job_description' in job and job['job_description']:
+                        job['job_description'] = clean_job_description(job['job_description'])
+
+                # Check if resume was uploaded and process it only when searching
+                if 'resume' in request.files:
+                    file = request.files['resume']
+                    if file and file.filename != '' and file.filename != 'undefined' and allowed_file(file.filename):
+                        resume_text = extract_text_from_pdf(file)
+                        if resume_text:
+                            if is_gemini_available():
+                                resume_data = parse_resume_with_gemini(resume_text)
+                                if resume_data:
+                                    import asyncio
+                                    results = asyncio.run(rank_jobs_by_match_async(resume_data, results))
+                                else:
+                                    error = 'Failed to analyze resume. Please try again.'
+                            else:
+                                error = 'Gemini API not available for resume analysis.'
+                        else:
+                            error = 'Failed to extract text from PDF. Please check the file.'
+                    else:
+                        error = 'Please upload a valid PDF file.'
+            else:
+                error = 'No jobs found. Try different filters.'
+
+        except Exception as e:
+            error = f'Error fetching jobs: {str(e)}'
+
+    return jsonify({
+        'results': results or [],
+        'resume_data': resume_data,
+        'error': error
+    })
 
 app.register_blueprint(generate_cover_letter_bp)
 
