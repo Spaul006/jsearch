@@ -451,4 +451,267 @@ body {
   box-shadow: none;
   transform: none;
 }
-/* --- End migrated styles --- */ 
+/* --- End migrated styles --- */
+
+/* --- Layout --- */
+.app-mockup-layout {
+  min-height: 100vh;
+  background: #e5e9f2;
+  padding: 2rem 0;
+  font-family: 'Inter', Arial, sans-serif;
+}
+.header {
+  background: #fff;
+  padding: 1.5rem 2rem 1rem 2rem;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  margin: 0 auto 2rem auto;
+  max-width: 1100px;
+}
+.logo-search-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.logo {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #2563eb;
+  letter-spacing: -1px;
+  margin-right: 2rem;
+}
+.search-bar {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+.search-fields {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.search-fields label {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #222;
+  margin-right: 0.3rem;
+}
+.search-fields input {
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  padding: 0.4rem 0.8rem;
+  font-size: 1rem;
+  background: #f9fafb;
+  margin-right: 0.5rem;
+}
+.search-btn {
+  background: #2563eb;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 0.5rem 1.5rem;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.search-btn:hover {
+  background: #174bbd;
+}
+
+.main-content-row {
+  display: flex;
+  gap: 2rem;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+.sidebar {
+  flex: 0 0 220px;
+  margin-top: 0.5rem;
+}
+.sidebar-box {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  padding: 2rem 1.2rem 1.5rem 1.2rem;
+  text-align: center;
+}
+.sidebar-box h3 {
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+}
+.sidebar-box p {
+  font-size: 0.95rem;
+  color: #444;
+  margin-bottom: 1.2rem;
+}
+.post-job-btn {
+  background: #2563eb;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 0.6rem 1.2rem;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.post-job-btn:hover {
+  background: #174bbd;
+}
+
+.main-content-center {
+  flex: 1 1 0%;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+/* --- Suggested Jobs --- */
+.suggested-jobs {
+  margin-bottom: 0.5rem;
+}
+.suggested-jobs h2 {
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin-bottom: 0.7rem;
+  color: #222;
+}
+.suggested-jobs-list {
+  display: flex;
+  gap: 1.2rem;
+}
+.suggested-job-card {
+  background: #f5f7fa;
+  border-radius: 10px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.03);
+  padding: 1rem 1.2rem 0.7rem 1.2rem;
+  min-width: 180px;
+  flex: 1 1 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  border: 1px solid #e5e7eb;
+}
+.suggested-job-company {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #2563eb;
+  text-transform: uppercase;
+  margin-bottom: 0.2rem;
+}
+.suggested-job-title {
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: #222;
+}
+.suggested-job-location {
+  font-size: 0.95rem;
+  color: #444;
+}
+.suggested-job-posted {
+  font-size: 0.85rem;
+  color: #888;
+  font-style: italic;
+}
+
+/* --- Job List --- */
+.job-list-section h2 {
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  color: #222;
+}
+.job-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+}
+.job-card-main {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  display: flex;
+  align-items: center;
+  padding: 1.2rem 1.5rem;
+  gap: 1.5rem;
+  border: 2px solid transparent;
+  transition: border 0.2s, box-shadow 0.2s;
+}
+.job-card-main.highlight {
+  border: 2px solid #2563eb;
+  box-shadow: 0 4px 16px rgba(37,99,235,0.08);
+}
+.job-card-logo {
+  font-size: 2.2rem;
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f5f7fa;
+  border-radius: 8px;
+  margin-right: 1rem;
+}
+.logo-td {
+  font-size: 1.7rem;
+  font-weight: 700;
+  color: #1a7f37;
+  background: #fff;
+  border-radius: 6px;
+  padding: 0.2rem 0.7rem;
+  border: 1.5px solid #1a7f37;
+}
+.logo-apple {
+  font-size: 2.1rem;
+  color: #222;
+}
+.job-card-info {
+  flex: 1 1 0%;
+}
+.job-card-company {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #888;
+  margin-bottom: 0.2rem;
+}
+.job-card-title {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #222;
+}
+.job-card-meta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  font-size: 0.95rem;
+  color: #666;
+  gap: 0.2rem;
+}
+@media (max-width: 900px) {
+  .main-content-row {
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+  .sidebar {
+    flex: 1 1 100%;
+    max-width: 100%;
+    margin-bottom: 1.5rem;
+  }
+}
+@media (max-width: 600px) {
+  .header, .main-content-row {
+    padding: 0 0.5rem;
+  }
+  .job-card-main {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.7rem;
+    padding: 1rem 0.7rem;
+  }
+  .suggested-jobs-list {
+    flex-direction: column;
+    gap: 0.7rem;
+  }
+} 
