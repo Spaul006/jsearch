@@ -5,6 +5,7 @@ from dotenv import load_dotenv
 import re
 from resume_processor import extract_text_from_pdf, parse_resume_with_gemini, rank_jobs_by_match_async, is_gemini_available, extract_filters_with_gemini
 from generate_cover_letter import generate_cover_letter_bp
+import urllib.parse
 
 # Load environment variables from .env file in backend directory
 load_dotenv()
@@ -112,6 +113,26 @@ def index():
                 for job in results:
                     if 'job_description' in job and job['job_description']:
                         job['job_description'] = clean_job_description(job['job_description'])
+                    # Add company_logo_url using Clearbit Logo API
+                    domain = None
+                    if 'employer_website' in job and job['employer_website']:
+                        # Extract domain from URL
+                        parsed = urllib.parse.urlparse(job['employer_website'])
+                        domain = parsed.netloc or parsed.path
+                    elif 'company_website' in job and job['company_website']:
+                        parsed = urllib.parse.urlparse(job['company_website'])
+                        domain = parsed.netloc or parsed.path
+                    elif 'company_name' in job and job['company_name']:
+                        # Guess domain from company name (best effort, may fail)
+                        domain = job['company_name'].lower().replace(' ', '') + '.com'
+                    elif 'employer_name' in job and job['employer_name']:
+                        domain = job['employer_name'].lower().replace(' ', '') + '.com'
+                    elif 'company' in job and job['company']:
+                        domain = job['company'].lower().replace(' ', '') + '.com'
+                    if domain:
+                        job['company_logo_url'] = f'https://logo.clearbit.com/{domain}'
+                    else:
+                        job['company_logo_url'] = None
                 
                 # Check if resume was uploaded and process it only when searching
                 print(f"🔍 Checking for resume file...")
@@ -179,6 +200,8 @@ def api_search_jobs():
             'date_posted': 'week',
             'employment_types': 'INTERN',
             'radius': miles_to_km(radius),
+            'num_pages': 1,
+            'limit': 25
         }
         headers = {
             'X-RapidAPI-Key': RAPIDAPI_KEY,
@@ -196,6 +219,26 @@ def api_search_jobs():
                 for job in results:
                     if 'job_description' in job and job['job_description']:
                         job['job_description'] = clean_job_description(job['job_description'])
+                    # Add company_logo_url using Clearbit Logo API
+                    domain = None
+                    if 'employer_website' in job and job['employer_website']:
+                        # Extract domain from URL
+                        parsed = urllib.parse.urlparse(job['employer_website'])
+                        domain = parsed.netloc or parsed.path
+                    elif 'company_website' in job and job['company_website']:
+                        parsed = urllib.parse.urlparse(job['company_website'])
+                        domain = parsed.netloc or parsed.path
+                    elif 'company_name' in job and job['company_name']:
+                        # Guess domain from company name (best effort, may fail)
+                        domain = job['company_name'].lower().replace(' ', '') + '.com'
+                    elif 'employer_name' in job and job['employer_name']:
+                        domain = job['employer_name'].lower().replace(' ', '') + '.com'
+                    elif 'company' in job and job['company']:
+                        domain = job['company'].lower().replace(' ', '') + '.com'
+                    if domain:
+                        job['company_logo_url'] = f'https://logo.clearbit.com/{domain}'
+                    else:
+                        job['company_logo_url'] = None
 
                 # Check if resume was uploaded and process it only when searching
                 if 'resume' in request.files:

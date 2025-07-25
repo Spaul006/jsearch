@@ -47,7 +47,14 @@ const JobList: React.FC<JobListProps> = ({ jobs, loading, onGenerateCoverLetter,
                 title={job.job_title || job.title || 'N/A'}
                 location={job.location || job.job_location || 'N/A'}
                 posted={job.posted_at || job.date_posted || job.posted || ''}
-                companyLogo={null}
+                companyLogo={job.company_logo_url ? (
+                  <img
+                    src={job.company_logo_url}
+                    alt={job.company_name || job.employer_name || job.company || 'Company Logo'}
+                    style={{ width: 40, height: 40, objectFit: 'contain', borderRadius: 6, background: '#fff' }}
+                    onError={e => { e.currentTarget.style.display = 'none'; }}
+                  />
+                ) : null}
                 highlight={actualExpandedIdx === idx}
                 expanded={actualExpandedIdx === idx}
                 onExpand={() => handleExpand(idx)}
