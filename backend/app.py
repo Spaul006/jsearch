@@ -83,8 +83,9 @@ def index():
     if request.method == 'POST':
         # Get job search parameters
         job_title = request.form.get('job_title', 'Software Engineer Intern')
-        location = request.form.get('location', 'Herndon, VA')
-        radius = request.form.get('radius', 25)
+        location = request.form.get('location', '').strip()
+        radius_str = request.form.get('radius', '')
+        radius = int(radius_str) if radius_str and radius_str.isdigit() else 25
         additional = request.form.get('additional', '')
         query = job_title
         if additional:
@@ -92,11 +93,14 @@ def index():
         
         params = {
             'query': query,
-            'location': location,
             'date_posted': 'week',
             'employment_types': 'INTERN',
-            'radius': miles_to_km(radius),
         }
+        
+        # Only add location and radius parameters if a location is specified
+        if location:
+            params['location'] = location
+            params['radius'] = miles_to_km(radius)
         headers = {
             'X-RapidAPI-Key': RAPIDAPI_KEY,
             'X-RapidAPI-Host': RAPIDAPI_HOST,
@@ -187,8 +191,9 @@ def api_search_jobs():
     if request.method == 'POST':
         # Get job search parameters
         job_title = request.form.get('job_title', 'Software Engineer Intern')
-        location = request.form.get('location', 'Herndon, VA')
-        radius = request.form.get('radius', 25)
+        location = request.form.get('location', '').strip()
+        radius_str = request.form.get('radius', '')
+        radius = int(radius_str) if radius_str and radius_str.isdigit() else 25
         additional = request.form.get('additional', '')
         query = job_title
         if additional:
@@ -196,13 +201,16 @@ def api_search_jobs():
 
         params = {
             'query': query,
-            'location': location,
             'date_posted': 'week',
             'employment_types': 'INTERN',
-            'radius': miles_to_km(radius),
-            'num_pages': 1,
-            'limit': 25
+            'num_pages': 4,
+            'limit': 10
         }
+        
+        # Only add location and radius parameters if a location is specified
+        if location:
+            params['location'] = location
+            params['radius'] = miles_to_km(radius)
         headers = {
             'X-RapidAPI-Key': RAPIDAPI_KEY,
             'X-RapidAPI-Host': RAPIDAPI_HOST,

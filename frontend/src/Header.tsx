@@ -5,8 +5,8 @@ interface HeaderProps {
   setJobTitle: (v: string) => void;
   location: string;
   setLocation: (v: string) => void;
-  radius: number;
-  setRadius: (v: number) => void;
+  radius: number | '';
+  setRadius: (v: number | '') => void;
   additional: string;
   setAdditional: (v: string) => void;
   onSearch: (e: React.FormEvent) => void;
@@ -44,9 +44,16 @@ const Header: React.FC<HeaderProps> = ({
           <label>WHERE</label>
           <input
             type="text"
-            placeholder="e.g. Vancouver, Toronto"
+            placeholder="e.g. Vancouver, Toronto (leave empty for all locations)"
             value={location}
-            onInput={e => setLocation((e.target as HTMLInputElement).value)}
+            onInput={e => {
+              const newLocation = (e.target as HTMLInputElement).value;
+              setLocation(newLocation);
+              // Clear radius if location is empty
+              if (!newLocation.trim()) {
+                setRadius('');
+              }
+            }}
             style={{ width: 160 }}
           />
           <input
@@ -54,9 +61,13 @@ const Header: React.FC<HeaderProps> = ({
             min={1}
             max={100}
             value={radius}
-            onInput={e => setRadius(Number((e.target as HTMLInputElement).value))}
+            onInput={e => {
+              const value = (e.target as HTMLInputElement).value;
+              setRadius(value === '' ? '' : Number(value));
+            }}
             style={{ width: 60 }}
             title="Radius (miles)"
+            disabled={!location.trim()}
           />
           <input
             type="text"

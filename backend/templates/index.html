@@ -373,11 +373,11 @@
                     </div>
                     <div class="form-group">
                         <label for="location">Location</label>
-                        <input type="text" id="location" name="location" value="{{ request.form.location or 'Herndon, VA' }}" placeholder="e.g. New York, NY">
+                        <input type="text" id="location" name="location" value="{{ request.form.location or '' }}" placeholder="e.g. New York, NY (leave empty for all locations)">
                     </div>
                     <div class="form-group">
                         <label for="radius">Radius (miles)</label>
-                        <input type="number" id="radius" name="radius" min="1" max="100" value="{{ request.form.radius or 25 }}" placeholder="25">
+                        <input type="number" id="radius" name="radius" min="1" max="100" value="{{ request.form.radius or '' }}" placeholder="25">
                     </div>
                     <div class="form-group">
                         <label for="additional">Additional Filters</label>
@@ -557,6 +557,28 @@
                 if (fileInput) { fileInput.value = ''; }
             }, 1000);
         });
+        
+        // Handle radius field behavior
+        var locationInput = document.getElementById('location');
+        var radiusInput = document.getElementById('radius');
+        
+        if (locationInput && radiusInput) {
+            locationInput.addEventListener('input', function() {
+                if (!this.value.trim()) {
+                    radiusInput.value = '';
+                    radiusInput.disabled = true;
+                } else {
+                    radiusInput.disabled = false;
+                }
+            });
+            
+            // Set initial state
+            if (!locationInput.value.trim()) {
+                radiusInput.value = '';
+                radiusInput.disabled = true;
+            }
+        }
+        
         var container = document.querySelector('.container');
         var hasResults = container.getAttribute('data-has-results') === 'true';
         if (hasResults) {

@@ -36,8 +36,8 @@ interface ResumeData {
 const App: React.FC = () => {
   // Form state
   const [jobTitle, setJobTitle] = useState('Software Engineer Intern');
-  const [location, setLocation] = useState('Herndon, VA');
-  const [radius, setRadius] = useState(25);
+  const [location, setLocation] = useState('');
+  const [radius, setRadius] = useState<number | ''>('');
   const [additional, setAdditional] = useState('');
   const [resumeFile, setResumeFile] = useState<File | null>(null);
 
@@ -152,7 +152,7 @@ const App: React.FC = () => {
     const formData = new FormData();
     formData.append('job_title', jobTitle);
     formData.append('location', location);
-    formData.append('radius', String(radius));
+    formData.append('radius', radius === '' ? '' : String(radius));
     formData.append('additional', additional);
     if (resumeFile) {
       formData.append('resume', resumeFile);
